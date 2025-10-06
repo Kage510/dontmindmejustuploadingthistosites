@@ -1,59 +1,53 @@
-<!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Super Mario 64</title>
-		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-		<style>
-body {
-	background:black;
-	margin: 0;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SM64 Loader</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+      background: black;
+    }
+    #gameContainer {
+      width: 100%;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <canvas id="gameCanvas"></canvas>
+  </div>
 
-.emscripten {
-	display: inline-block;
-	position: fixed;
-	margin: auto;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	width: 100vw;
-	height: 100vh;
-	overflow: hidden;
-}
-	</style>
-	</head>
-	<body>
-		<canvas class='emscripten' id='canvas'></canvas>
-		<script>
-var canvas = document.querySelector('canvas'),
-	dupe = event => window.dispatchEvent(new event.constructor(event.type, Object.fromEntries(Object.getOwnPropertyNames(event.constructor.prototype).map(x => [ x, event[x] ]))));
+  <script>
+    // Predefine Module so the WASM and assets are loaded correctly
+    var Module = {
+      locateFile: function(path) {
+        return path.endsWith('.wasm') || path.endsWith('.data') || path.endsWith('.mem') 
+          ? path 
+          : path; // keep other paths unchanged
+      },
+      canvas: document.getElementById('gameCanvas')
+    };
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-canvas.addEventListener('webglcontextlost', () => location.reload());
-canvas.addEventListener('mousedown', () => canvas.requestPointerLock());
-
-if(parent.location != location){
-	parent.addEventListener('keydown', dupe);
-	parent.addEventListener('keyup', dupe);
-}
-
-var Module = {
-	print(...text){
-		console.log(...text);
-	},
-	printErr(...text){
-		console.error(...text);
-	},
-	canvas: canvas,
-	setStatus(...text){
-		console.info(...text);
-	},
-};
-		</script>
-		<script src='sm64.js?v'></script>
-	</body>
+    // Dynamically load the SM64 JS
+    var script = document.createElement('script');
+    script.src = 'sm64.js';
+    script.onload = function() {
+      console.log('SM64 JS loaded successfully');
+    };
+    script.onerror = function() {
+      console.error('Failed to load SM64 JS');
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
 </html>
