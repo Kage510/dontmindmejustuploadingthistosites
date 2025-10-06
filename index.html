@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SM64 Loader</title>
+  <title>Super Mario 64 JS</title>
   <style>
     html, body {
       margin: 0;
@@ -15,10 +15,13 @@
     #gameContainer {
       width: 100%;
       height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     canvas {
       display: block;
-      margin: auto;
+      background: black;
     }
   </style>
 </head>
@@ -28,26 +31,28 @@
   </div>
 
   <script>
-    // Predefine Module so the WASM and assets are loaded correctly
+    // Define Module before the game JS runs
     var Module = {
+      canvas: document.getElementById('gameCanvas'),
+
+      // Redirect WebAssembly and any other file loads to jsDelivr CDN
       locateFile: function(path) {
-        return path.endsWith('.wasm') || path.endsWith('.data') || path.endsWith('.mem') 
-          ? path 
-          : path; // keep other paths unchanged
+        return 'https://cdn.jsdelivr.net/gh/Kage510/dontmindmejustuploadingthistosites@main/' + path;
       },
-      canvas: document.getElementById('gameCanvas')
+
+      onRuntimeInitialized: function() {
+        console.log('SM64 runtime initialized.');
+      }
     };
 
-    // Dynamically load the SM64 JS
-    var script = document.createElement('script');
-    script.src = 'sm64.js';
-    script.onload = function() {
-      console.log('SM64 JS loaded successfully');
-    };
-    script.onerror = function() {
-      console.error('Failed to load SM64 JS');
-    };
-    document.body.appendChild(script);
+    // Dynamically load the main game JS from jsDelivr
+    (function() {
+      var script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/gh/Kage510/dontmindmejustuploadingthistosites@main/sm64.js';
+      script.onload = () => console.log('Game JS loaded.');
+      script.onerror = () => console.error('Error loading game JS.');
+      document.body.appendChild(script);
+    })();
   </script>
 </body>
 </html>
